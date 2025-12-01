@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "Leche de Almendras Sin Azúcar",
+    "brand": "AlmendraX",
+    "category": "Bebidas vegetales",
+    "isSafeForAPLV": true,
+    "scanCode": "1234567890123",
+    "updatedAt": "2025-01-10T12:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Yogurt Natural",
+    "brand": "LacteosDelSur",
+    "category": "Lácteos",
+    "isSafeForAPLV": false,
+    "scanCode": "9998887776661",
+    "updatedAt": "2025-01-10T12:00:00Z"
+  },
+  {
+    "id": 3,
+    "name": "Galletas de Avena",
+    "brand": "CrunchyCo",
+    "category": "Snacks",
+    "isSafeForAPLV": null,
+    "scanCode": "4445556667778",
+    "updatedAt": "2025-01-10T12:00:00Z"
+  }
+]

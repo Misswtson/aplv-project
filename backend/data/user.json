@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Emma Linares",
+    "email": "emma@example.com",
+    "passwordHash": "$2b$10$examplehashstring",
+    "createdAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Test User",
+    "email": "test@example.com",
+    "passwordHash": "$2b$10$examplehashstring2",
+    "createdAt": "2025-01-05T15:30:00Z"
+  }
+]

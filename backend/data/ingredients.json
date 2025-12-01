@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "productId": 1,
+    "name": "Almendras",
+    "isMilkOrDeriv": false,
+    "aliases": [],
+    "updatedAt": "2025-01-10T12:00:00Z"
+  },
+  {
+    "id": 2,
+    "productId": 2,
+    "name": "Leche",
+    "isMilkOrDeriv": true,
+    "aliases": ["leche entera", "crema de leche"],
+    "updatedAt": "2025-01-10T12:00:00Z"
+  },
+  {
+    "id": 3,
+    "productId": 2,
+    "name": "Suero de leche",
+    "isMilkOrDeriv": true,
+    "aliases": ["whey", "lactosuero"],
+    "updatedAt": "2025-01-10T12:00:00Z"
+  },
+  {
+    "id": 4,
+    "productId": 3,
+    "name": "Avena",
+    "isMilkOrDeriv": false,
+    "aliases": [],
+    "updatedAt": "2025-01-10T12:00:00Z"
+  },
+  {
+    "id": 5,
+    "productId": 3,
+    "name": "Trazas de leche",
+    "isMilkOrDeriv": true,
+    "aliases": ["puede contener leche"],
+    "updatedAt": "2025-01-10T12:00:00Z"
+  }
+]
