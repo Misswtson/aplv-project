@@ -1,0 +1,27 @@
+{
+  "name": "aplv-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "frontend": "npm run dev --prefix frontend",
+    "backend": "node backend/index.js",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Misswtson/aplv-project.git"
+  },     
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Misswtson/aplv-project/issues"
+  },
+  "homepage": "https://github.com/Misswtson/aplv-project#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
