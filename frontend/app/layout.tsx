@@ -1,6 +1,14 @@
+import "./globals.css";
+
 export const metadata = {
-  title: "APLV Scanner",
-  description: "Detector de ingredientes con leche o derivados.",
-  manifest: "/manifest.json",
-  themeColor: "#ffffff",
+  title: "APLV App",
+  description: "Scanner de productos aptos APLV",
 };
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es">
+      <body>{children}</body>
+    </html>
+  );
+}
