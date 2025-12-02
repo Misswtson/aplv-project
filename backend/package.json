@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+  "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+  "validate-data": "ts-node src/scripts/validate-data.ts",
+  "seed": "ts-node src/scripts/seed-db.ts",
+  "build": "tsc"
   },
   "keywords": [],
   "author": "",
