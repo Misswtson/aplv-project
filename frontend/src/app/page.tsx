@@ -13,7 +13,7 @@ export default function HomePage() {
 
         <a
           href="/search"
-          className="bg-gray-800 text-white p-3 rounded-lg text-center"
+          className="bg-blue-800 text-white p-3 rounded-lg text-center"
         >
           Buscar producto
         </a>
