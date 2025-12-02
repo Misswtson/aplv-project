@@ -1,12 +1,11 @@
 import express from "express";
+import versionRouter from "./routes/version";
 
 const app = express();
-const PORT = 4000;
+app.use(express.json());
 
-app.get("/version", (req, res) => {
-  res.json({ api: "aplv-api", version: "1.0.0", status: "ok" });
-});
+app.use("/version", versionRouter);
 
-app.listen(PORT, () => {
-  console.log(`API running at http://localhost:${PORT}`);
+app.listen(4000, () => {
+  console.log("Backend running on http://localhost:4000");
 });
