@@ -1,12 +1,11 @@
-const API_URL = "http://localhost:4000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-export async function searchProductByScan(scanCode: string) {
-  const res = await fetch(`${API_URL}/products/${scanCode}`);
-  if (!res.ok) return null;
-  return res.json();
-}
+export async function apiGet(path: string) {
+  const res = await fetch(`${API_URL}${path}`);
 
-export async function searchIngredients(productId: number) {
-  const res = await fetch(`${API_URL}/ingredients?productId=${productId}`);
+  if (!res.ok) {
+    throw new Error(`API GET error: ${res.status}`);
+  }
+
   return res.json();
 }

@@ -2,6 +2,9 @@ export default function HomePage() {
   return (
     <main className="p-6 flex flex-col gap-6">
       <h1 className="text-2xl font-bold">APLV Checker</h1>
+      <p className="text-lg text-center">
+        Encuentra alimentos seguros y apoyo confiable.
+      </p>
 
       <div className="flex flex-col gap-4">
         <a

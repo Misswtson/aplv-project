@@ -17,8 +17,16 @@ export default function ScanPage() {
           videoRef.current.srcObject = stream;
           videoRef.current.play();
         }
-      } catch (err) {
-        setError("No se pudo acceder a la cámara");
+      } catch (err: any) {
+        console.error("Camera error:", err);
+
+        if (err.name === "NotAllowedError") {
+          setError("Debes permitir acceso a la cámara para usar esta función.");
+        } else if (err.name === "NotFoundError") {
+          setError("No se encontró una cámara en este dispositivo.");
+        } else {
+          setError("No se pudo acceder a la cámara.");
+        }
       }
     };
 
@@ -34,6 +42,9 @@ export default function ScanPage() {
       <video
         ref={videoRef}
         className="rounded-lg border w-full max-w-md mx-auto"
+        autoPlay
+        playsInline
+        muted
       />
     </main>
   );
