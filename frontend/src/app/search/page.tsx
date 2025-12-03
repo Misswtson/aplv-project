@@ -1,20 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { apiGet } from "../../lib/api"
-
+import { apiGet } from "../../lib/api";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const search = async () => {
-    setLoading(true);
-    const data = await apiGet(`/products/search?query=${query}`);
-    setResults(data);
-    setLoading(false);
-  };
+  async function search() {
+    if (!query.trim()) return;
+
+    try {
+      setLoading(true);
+
+      const data = await apiGet<{ products: any[] }>(
+        `http://localhost:4000/api/search?query=${encodeURIComponent(query)}`
+      );
+
+      setResults(data.products || []);
+    } catch (err) {
+      console.error("Error fetching:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <main className="p-4">

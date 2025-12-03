@@ -1,8 +1,13 @@
-export async function searchProduct(code: string) {
-  const res = await fetch(`http://localhost:4000/api/search?code=${code}`);
+export async function apiGet<T>(url: string): Promise<T> {
+  const res = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-  if (!res.ok) throw new Error("Error en la API");
+  if (!res.ok) {
+    throw new Error(`API error: ${res.status}`);
+  }
 
   return res.json();
 }
-
