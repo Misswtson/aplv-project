@@ -1,11 +1,20 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const express = require("express");
+const router = express.Router();
+const db = require("../db"); // tu instancia better-sqlite3
 
-export async function apiGet(path: string) {
-  const res = await fetch(`${API_URL}${path}`);
+router.get("/search", (req, res) => {
+  const { code } = req.query;
 
-  if (!res.ok) {
-    throw new Error(`API GET error: ${res.status}`);
+  if (!code) return res.status(400).json({ error: "Código requerido" });
+
+  const stmt = db.prepare("SELECT * FROM products WHERE scanCode = ?");
+  const product = stmt.get(code);
+
+  if (!product) {
+    return res.json({ found: false });
   }
 
-  return res.json();
-}
+  res.json({ found: true, product });
+});
+
+module.exports = router;
