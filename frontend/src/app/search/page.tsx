@@ -14,11 +14,11 @@ export default function SearchPage() {
     try {
       setLoading(true);
 
-      const data = await apiGet<{ products: any[] }>(
+      const data = await apiGet<{ result: any[] }>(
         `http://localhost:4000/api/search?query=${encodeURIComponent(query)}`
       );
 
-      setResults(data.products || []);
+      setResults(data.result || []);
     } catch (err) {
       console.error("Error fetching:", err);
     } finally {
