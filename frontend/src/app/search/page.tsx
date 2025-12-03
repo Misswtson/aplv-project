@@ -3,66 +3,56 @@
 import { useState } from "react";
 import { apiGet } from "../../lib/api"
 
+
 export default function SearchPage() {
   const [query, setQuery] = useState("");
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  async function handleSearch() {
-    try {
-      setError("");
-      const result = await apiGet(`/products/code/${query}`);
-      setData(result);
-    } catch (err) {
-      setError("Producto no encontrado");
-      setData(null);
-    }
-  }
+  const search = async () => {
+    setLoading(true);
+    const data = await apiGet(`/products/search?query=${query}`);
+    setResults(data);
+    setLoading(false);
+  };
 
   return (
     <main className="p-4">
-      <h1 className="text-xl font-bold mb-4">Buscar producto</h1>
+      <h1 className="text-xl font-bold mb-4">Buscar alimentos</h1>
 
       <input
-        className="border p-2 w-full mb-2"
-        placeholder="Escanea o ingresa el código..."
+        type="text"
+        placeholder="Ej: Leche, Yogurt, Galletas…"
+        className="border px-3 py-2 w-full rounded mb-3"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
 
       <button
-        className="bg-blue-600 text-white p-2 rounded w-full"
-        onClick={handleSearch}
+        onClick={search}
+        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
       >
         Buscar
       </button>
 
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {loading && <p className="mt-4">Buscando...</p>}
 
-      {data && (
-        <div className="mt-4 p-3 border rounded">
-          <h2 className="font-bold">{data.product.name}</h2>
-          <p>Marca: {data.product.brand}</p>
-          <p>
-            Apto APLV:{" "}
-            {data.product.isSafeForAPLV === 1
-              ? "Sí 💚"
-              : data.product.isSafeForAPLV === 0
-              ? "No ❌"
-              : "Desconocido"}
-          </p>
-
-          <h3 className="font-semibold mt-3">Ingredientes:</h3>
-          <ul className="list-disc ml-5">
-            {data.ingredients.map((i: any) => (
-              <li key={i.id}>
-                {i.name}{" "}
-                {i.isMilkOrDeriv ? <span className="text-red-600">⚠️</span> : ""}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <ul className="mt-4">
+        {results.map((item) => (
+          <li key={item.id} className="p-3 bg-white rounded shadow mb-2">
+            <p className="font-bold">{item.name}</p>
+            <p className="text-sm text-gray-600">{item.brand}</p>
+            <p className="text-sm">
+              Apto APLV:{" "}
+              {item.isSafeForAPLV === null
+                ? "❓ Desconocido"
+                : item.isSafeForAPLV
+                ? "✔ Sí"
+                : "✖ No"}
+            </p>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }

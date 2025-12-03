@@ -1,26 +1,12 @@
-export default function HomePage() {
+export default function Home() {
   return (
-    <main className="p-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">APLV Checker</h1>
-      <p className="text-lg text-center">
-        Encuentra alimentos seguros y apoyo confiable.
+    <main className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Bienvenida, Emma 👋</h1>
+
+      <p className="text-gray-600">
+        Usa el escáner o busca alimentos para verificar si son aptos para APLV.
       </p>
-
-      <div className="flex flex-col gap-4">
-        <a
-          href="/scan"
-          className="bg-blue-600 text-white p-3 rounded-lg text-center"
-        >
-          Escanear código
-        </a>
-
-        <a
-          href="/search"
-          className="bg-blue-800 text-white p-3 rounded-lg text-center"
-        >
-          Buscar producto
-        </a>
-      </div>
     </main>
   );
 }
+
