@@ -1,36 +1,59 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { BrowserMultiFormatReader } from "@zxing/browser";
 
 export default function ScanPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [result, setResult] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const startCamera = async () => {
+    const codeReader = new BrowserMultiFormatReader();
+
+    const startScanner = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-        });
+        const devices =
+          await BrowserMultiFormatReader.listVideoInputDevices();
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play();
-        }
-      } catch (err: any) {
-        console.error("Camera error:", err);
+        const backCamera = devices.find((d) =>
+          d.label.toLowerCase().includes("back")
+        );
 
-        if (err.name === "NotAllowedError") {
-          setError("Debes permitir acceso a la cámara para usar esta función.");
-        } else if (err.name === "NotFoundError") {
-          setError("No se encontró una cámara en este dispositivo.");
-        } else {
-          setError("No se pudo acceder a la cámara.");
+        const deviceId = backCamera?.deviceId || devices[0]?.deviceId;
+        if (!deviceId) {
+          setError("No se encontró cámara disponible.");
+          return;
         }
+
+        codeReader.decodeFromVideoDevice(
+          deviceId,
+          videoRef.current!,
+          (result, err) => {
+            if (result) {
+              setResult(result.getText());
+              console.log("Código detectado:", result.getText());
+            }
+          }
+        );
+      } catch (err) {
+        setError("No se pudo iniciar la cámara.");
+        console.error(err);
       }
     };
 
-    startCamera();
+    startScanner();
+
+    // ⛔ No existe codeReader.reset()
+    // 🟢 Se detiene la cámara manualmente aquí:
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+
+        stream.getTracks().forEach((track) => track.stop());
+        videoRef.current.srcObject = null;
+      }
+    };
   }, []);
 
   return (
@@ -42,10 +65,13 @@ export default function ScanPage() {
       <video
         ref={videoRef}
         className="rounded-lg border w-full max-w-md mx-auto"
-        autoPlay
-        playsInline
-        muted
       />
+
+      {result && (
+        <p className="mt-4 p-3 bg-green-100 border text-green-700 rounded">
+          Código detectado: <strong>{result}</strong>
+        </p>
+      )}
     </main>
   );
 }
