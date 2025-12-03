@@ -1,20 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const db = require("../db"); // tu instancia better-sqlite3
+export async function searchProduct(code: string) {
+  const res = await fetch(`http://localhost:4000/api/search?code=${code}`);
 
-router.get("/search", (req, res) => {
-  const { code } = req.query;
+  if (!res.ok) throw new Error("Error en la API");
 
-  if (!code) return res.status(400).json({ error: "Código requerido" });
+  return res.json();
+}
 
-  const stmt = db.prepare("SELECT * FROM products WHERE scanCode = ?");
-  const product = stmt.get(code);
-
-  if (!product) {
-    return res.json({ found: false });
-  }
-
-  res.json({ found: true, product });
-});
-
-module.exports = router;
