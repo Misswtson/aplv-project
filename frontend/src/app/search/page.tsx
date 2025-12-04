@@ -1,68 +1,113 @@
-"use client";
+// frontend/src/app/(root)/search/page.tsx
+"use client"
 
-import { useState } from "react";
-import { apiGet } from "../../lib/api";
+import { useState } from "react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Search, ShieldCheck, AlertTriangle, Loader2 } from "lucide-react"
+
+type ProductResult = {
+  id: number
+  name: string
+  brand: string
+  isSafe: boolean
+}
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("")
+  const [results, setResults] = useState<ProductResult[]>([])
+  const [loading, setLoading] = useState(false)
+  const [searched, setSearched] = useState(false)
 
-  async function search() {
-    if (!query.trim()) return;
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    if (!query.trim()) return
+
+    setLoading(true)
+    setSearched(true)
 
     try {
-      setLoading(true);
+      const response = await fetch(
+        `http://localhost:4000/api/products?query=${encodeURIComponent(query)}`
+      )
 
-      const data = await apiGet<{ result: any[] }>(
-        `http://localhost:4000/api/search?query=${encodeURIComponent(query)}`
-      );
+      if (!response.ok) throw new Error("Error en la búsqueda")
 
-      setResults(data.result || []);
+      const data = await response.json()
+      setResults(data)
     } catch (err) {
-      console.error("Error fetching:", err);
+      console.error(err)
+      setResults([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   return (
-    <main className="p-4">
-      <h1 className="text-xl font-bold mb-4">Buscar alimentos</h1>
+    <div className="space-y-4 max-w-md mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Search className="h-5 w-5 text-emerald-600" />
+            Buscar producto
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <form onSubmit={handleSearch} className="flex items-center gap-2">
+            <Input
+              placeholder="Nombre o marca"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              disabled={loading}
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              disabled={!query.trim() || loading}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
+            </Button>
+          </form>
 
-      <input
-        type="text"
-        placeholder="Ej: Leche, Yogurt, Galletas…"
-        className="border px-3 py-2 w-full rounded mb-3"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+          {/* Results */}
+          <div className="space-y-2">
+            {searched && results.length === 0 && !loading && (
+              <p className="text-xs text-slate-500 text-center py-4">
+                No se encontraron resultados.
+              </p>
+            )}
 
-      <button
-        onClick={search}
-        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
-      >
-        Buscar
-      </button>
-
-      {loading && <p className="mt-4">Buscando...</p>}
-
-      <ul className="mt-4">
-        {results.map((item) => (
-          <li key={item.id} className="p-3 bg-white rounded shadow mb-2">
-            <p className="font-bold">{item.name}</p>
-            <p className="text-sm text-gray-600">{item.brand}</p>
-            <p className="text-sm">
-              Apto APLV:{" "}
-              {item.isSafeForAPLV === null
-                ? "❓ Desconocido"
-                : item.isSafeForAPLV
-                ? "✔ Sí"
-                : "✖ No"}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </main>
-  );
+            {results.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between rounded-lg border bg-white px-3 py-3 hover:shadow-sm transition"
+              >
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-medium truncate">{p.name}</span>
+                  <span className="text-[11px] text-slate-500 truncate">{p.brand}</span>
+                </div>
+                {p.isSafe ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-[2px] text-[11px] text-emerald-700 border border-emerald-100 flex-shrink-0 ml-2">
+                    <ShieldCheck className="h-3 w-3" />
+                    <span className="hidden sm:inline">Apto</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-[2px] text-[11px] text-red-700 border border-red-100 flex-shrink-0 ml-2">
+                    <AlertTriangle className="h-3 w-3" />
+                    <span className="hidden sm:inline">No apto</span>
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }
