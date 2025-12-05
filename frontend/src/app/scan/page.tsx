@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ScanLine, Upload, AlertTriangle, ShieldCheck, Loader2 } from "lucide-react"
-import { ScanResultCard } from "../../components/scan-result-card"
+import { ScanResultCard } from "../../components/aplv/scan-result-card"
 
 type ScanResult = {
   productName: string
