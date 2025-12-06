@@ -1,275 +1,191 @@
 "use client"
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ScanLine, Search, ShieldCheck, ArrowRight, Zap, Shield, BarChart3, Users } from "lucide-react"
+import { BarcodeScanner } from "../app/components/aplv/barcode-scanner"
+import { ScanLine, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react"
 
-export default function HomePage() {
+export default function ScanPage() {
+  const [isScanning, setIsScanning] = useState(false)
+  const [scanResult, setScanResult] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleScanSuccess = async (barcode: string) => {
+    setLoading(true)
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/products/barcode/${barcode}`
+      )
+      const data = await response.json()
+      setScanResult(data)
+      setIsScanning(false)
+    } catch (error) {
+      console.error("Error fetching product:", error)
+      setScanResult({
+        error: "Producto no encontrado",
+        barcode: barcode,
+      })
+      setIsScanning(false)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleScanError = (error: string) => {
+    console.error("Scan error:", error)
+    setScanResult({ error: error })
+  }
+
+  const resetScan = () => {
+    setScanResult(null)
+    setIsScanning(false)
+  }
+
   return (
-    <div className="space-y-16">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50 p-8 md:p-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 mb-4">
-              <Zap className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm font-semibold text-emerald-700">Protección para APLV</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">
-              Gestiona la alergia a la leche de forma segura
-            </h1>
-            <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-              Escanea códigos de barras, verifica ingredientes al instante y accede a información detallada sobre productos. Herramientas personalizadas para padres que cuidan a sus hijos con APLV.
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-slate-900">Escanear producto</h1>
+        {isScanning && (
+          <Button
+            variant="outline"
+            onClick={() => setIsScanning(false)}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Cancelar
+          </Button>
+        )}
+      </div>
+
+      {/* Scanner */}
+      {!scanResult && !isScanning && (
+        <div className="text-center space-y-6">
+          <div className="rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 p-12">
+            <ScanLine className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-slate-900 mb-2">
+              Listo para escanear
+            </h2>
+            <p className="text-slate-600 mb-6">
+              Presiona el botón para abrir la cámara y escanear un código de barras
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 h-auto text-base rounded-lg">
-                <ScanLine className="h-5 w-5 mr-2" />
-                Comenzar a escanear
-              </Button>
-              <Button variant="outline" className="font-semibold px-6 py-3 h-auto text-base rounded-lg border-2">
-                Saber más
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
+            <Button
+              onClick={() => setIsScanning(true)}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-6 h-auto text-lg gap-2 rounded-lg"
+            >
+              <ScanLine className="h-5 w-5" />
+              Abrir cámara
+            </Button>
           </div>
-          
-          {/* Visual side */}
-          <div className="hidden md:flex justify-center">
-            <div className="relative w-72 h-96 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 p-1 shadow-2xl">
-              <div className="w-full h-full rounded-2xl bg-white flex flex-col items-center justify-center space-y-4">
-                <ScanLine className="h-16 w-16 text-emerald-600" />
-                <p className="text-center font-semibold text-slate-900">Escanea y verifica</p>
-                <p className="text-center text-sm text-slate-600 px-4">Resultados inmediatos sobre ingredientes</p>
+        </div>
+      )}
+
+      {/* Scanner active */}
+      {isScanning && (
+        <BarcodeScanner
+          isScanning={isScanning}
+          onScanSuccess={handleScanSuccess}
+          onScanError={handleScanError}
+        />
+      )}
+
+      {/* Loading */}
+      {loading && (
+        <div className="text-center py-12">
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full">
+            <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />
+            Buscando producto...
+          </div>
+        </div>
+      )}
+
+      {/* Results */}
+      {scanResult && !loading && (
+        <div className="space-y-4">
+          {scanResult.error ? (
+            <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-6">
+              <div className="flex items-start gap-4">
+                <AlertCircle className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-900">Producto no encontrado</h3>
+                  <p className="text-sm text-red-700 mt-1">
+                    {scanResult.message || "El código de barras no está en nuestra base de datos"}
+                  </p>
+                  <p className="text-xs text-red-600 mt-2 font-mono">
+                    Código: {scanResult.barcode}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className={`rounded-2xl border-2 p-6 ${
+              scanResult.isSafe
+                ? "border-green-200 bg-green-50"
+                : "border-red-200 bg-red-50"
+            }`}>
+              <div className="flex items-start gap-4">
+                <CheckCircle
+                  className={`h-6 w-6 flex-shrink-0 mt-1 ${
+                    scanResult.isSafe ? "text-green-600" : "text-red-600"
+                  }`}
+                />
+                <div className="flex-1">
+                  <h3 className={`font-semibold ${
+                    scanResult.isSafe ? "text-green-900" : "text-red-900"
+                  }`}>
+                    {scanResult.isSafe ? "✓ Producto seguro" : "✗ No recomendado"}
+                  </h3>
+                  <p className={`text-sm mt-2 ${
+                    scanResult.isSafe ? "text-green-700" : "text-red-700"
+                  }`}>
+                    <strong>{scanResult.name}</strong> - {scanResult.brand}
+                  </p>
+
+                  {scanResult.allIngredients && (
+                    <div className="mt-4">
+                      <p className="text-xs font-semibold text-slate-600 mb-2">Ingredientes:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {scanResult.allIngredients.map((ing: string) => (
+                          <span
+                            key={ing}
+                            className="text-xs bg-white/50 px-2 py-1 rounded-full"
+                          >
+                            {ing}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {scanResult.riskyIngredients?.length > 0 && (
+                    <div className="mt-4 p-3 bg-red-100/50 rounded-lg border border-red-200">
+                      <p className="text-xs font-semibold text-red-900">
+                        ⚠️ Ingredientes con riesgo APLV:
+                      </p>
+                      <ul className="text-xs text-red-800 mt-1 space-y-1">
+                        {scanResult.riskyIngredients.map((ing: string) => (
+                          <li key={ing}>• {ing}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={resetScan}
+            variant="outline"
+            size="lg"
+            className="w-full gap-2"
+          >
+            <ScanLine className="h-4 w-4" />
+            Escanear otro producto
+          </Button>
         </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard 
-          number="50,000+" 
-          label="Productos escaneados"
-          icon={<BarChart3 className="h-6 w-6" />}
-        />
-        <StatCard 
-          number="15,000+" 
-          label="Padres confiables"
-          icon={<Users className="h-6 w-6" />}
-        />
-        <StatCard 
-          number="100%" 
-          label="Verificados"
-          icon={<Shield className="h-6 w-6" />}
-        />
-        <StatCard 
-          number="24/7" 
-          label="Disponible"
-          icon={<Zap className="h-6 w-6" />}
-        />
-      </section>
-
-      {/* Features Section */}
-      <section>
-        <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-            Herramientas diseñadas para ti
-          </h2>
-          <p className="text-lg text-slate-600">
-            Acceso rápido a información confiable sobre alimentos seguros para APLV
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Feature 1: Scanner */}
-          <FeatureCard
-            icon={<ScanLine className="h-8 w-8" />}
-            title="Escanear código de barras"
-            description="Abre la cámara y escanea el código del producto"
-            features={[
-              "Detección automática",
-              "Resultados inmediatos",
-              "Información detallada de ingredientes",
-              "Historial de escaneos"
-            ]}
-            bgColor="from-blue-50 to-blue-100"
-            iconColor="text-blue-600"
-          />
-
-          {/* Feature 2: Search */}
-          <FeatureCard
-            icon={<Search className="h-8 w-8" />}
-            title="Buscar productos"
-            description="Encuentra información sobre productos específicos"
-            features={[
-              "Base de datos completa",
-              "Búsqueda rápida",
-              "Filtros personalizados",
-              "Comparar productos"
-            ]}
-            bgColor="from-blue-50 to-blue-100"
-            iconColor="text-blue-600"
-          />
-
-          {/* Feature 3: Safe List */}
-          <FeatureCard
-            icon={<ShieldCheck className="h-8 w-8" />}
-            title="Lista de productos aptos"
-            description="Guarda y accede a productos verificados"
-            features={[
-              "Lista personalizada",
-              "Acceso rápido",
-              "Compartir con otros",
-              "Recomendaciones"
-            ]}
-            bgColor="from-blue-50 to-blue-100"
-            iconColor="text-blue-600"
-          />
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="rounded-3xl border-2 border-slate-200 bg-white p-8 md:p-12">
-        <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
-          ¿Cómo funciona?
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <StepCard
-            number="1"
-            title="Abre la cámara"
-            description="Selecciona la opción de escaneo"
-          />
-          <div className="hidden md:flex items-center justify-center">
-            <ArrowRight className="h-6 w-6 text-slate-300 rotate-90 md:rotate-0" />
-          </div>
-          <StepCard
-            number="2"
-            title="Escanea el código"
-            description="Apunta el código de barras"
-          />
-          <div className="hidden md:flex items-center justify-center">
-            <ArrowRight className="h-6 w-6 text-slate-300 rotate-90 md:rotate-0" />
-          </div>
-          <StepCard
-            number="3"
-            title="Obtén resultado"
-            description="Información inmediata"
-          />
-          <div className="hidden md:flex items-center justify-center">
-            <ArrowRight className="h-6 w-6 text-slate-300 rotate-90 md:rotate-0" />
-          </div>
-          <StepCard
-            number="4"
-            title="Guarda o comparte"
-            description="Acceso futuro seguro"
-          />
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section>
-        <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
-          Historias de padres
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <TestimonialCard
-            name="María García"
-            role="Madre"
-            text="APLV Helper me ha dado paz mental. Ahora puedo verificar productos en el supermercado en segundos."
-            initials="MG"
-          />
-          <TestimonialCard
-            name="Juan López"
-            role="Padre"
-            text="La app es intuitiva y rápida. Exactamente lo que necesitaba para cuidar a mi hijo."
-            initials="JL"
-          />
-          <TestimonialCard
-            name="Sofia Rodríguez"
-            role="Abuela"
-            text="Perfecto para llevar al supermercado. Tengo todo verificado antes de comprar."
-            initials="SR"
-          />
-        </div>
-      </section>
-
-      {/* CTA Final */}
-      <section className="relative overflow-hidden rounded-3xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-600 to-emerald-700 p-8 md:p-16 text-center text-white">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Protege a tu familia hoy
-        </h2>
-        <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-          Acceso gratuito a herramientas diseñadas para padres que cuidan a niños con APLV
-        </p>
-        <Button className="bg-white text-emerald-600 hover:bg-slate-100 font-semibold px-8 py-6 h-auto text-lg rounded-lg">
-          <ScanLine className="h-5 w-5 mr-2" />
-          Descargar app gratuita
-        </Button>
-      </section>
-    </div>
-  )
-}
-
-function StatCard({ number, label, icon }: any) {
-  return (
-    <div className="rounded-2xl border-2 border-slate-200 bg-white p-6 text-center hover:shadow-lg hover:border-emerald-300 transition-all group">
-      <div className="h-12 w-12 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center mx-auto mb-3 text-emerald-600 transition">
-        {icon}
-      </div>
-      <p className="text-3xl md:text-4xl font-bold text-emerald-600">{number}</p>
-      <p className="text-sm text-slate-600 mt-2">{label}</p>
-    </div>
-  )
-}
-
-function FeatureCard({ icon, title, description, features, bgColor, iconColor }: any) {
-  return (
-    <div className={`rounded-2xl bg-gradient-to-br ${bgColor} border-2 border-slate-200 p-6 hover:shadow-lg transition-all`}>
-      <div className={`h-12 w-12 rounded-lg ${iconColor} mb-4 flex items-center justify-center bg-white`}>
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold text-slate-900 mb-2">{title}</h3>
-      <p className="text-slate-600 mb-4">{description}</p>
-      <ul className="space-y-2">
-        {features.map((feature: string) => (
-          <li key={feature} className="flex items-center gap-2 text-sm text-slate-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-function StepCard({ number, title, description }: any) {
-  return (
-    <div className="text-center">
-      <div className="h-12 w-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-lg mx-auto mb-3">
-        {number}
-      </div>
-      <h3 className="font-semibold text-slate-900">{title}</h3>
-      <p className="text-sm text-slate-600 mt-1">{description}</p>
-    </div>
-  )
-}
-
-function TestimonialCard({ name, role, text, initials }: any) {
-  return (
-    <div className="rounded-2xl border-2 border-slate-200 bg-white p-6 hover:shadow-lg transition-all">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="h-12 w-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold">
-          {initials}
-        </div>
-        <div>
-          <p className="font-semibold text-slate-900">{name}</p>
-          <p className="text-sm text-slate-600">{role}</p>
-        </div>
-      </div>
-      <p className="text-slate-700 italic">"{text}"</p>
+      )}
     </div>
   )
 }

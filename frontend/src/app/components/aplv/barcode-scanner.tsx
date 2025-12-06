@@ -1,4 +1,3 @@
-// frontend/src/components/aplv/barcode-scanner.tsx
 "use client"
 
 import { useEffect, useRef, useState } from "react"
@@ -16,16 +15,22 @@ export function BarcodeScanner({ onScanSuccess, onScanError, isScanning }: Props
   const [initialized, setInitialized] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const readerRef = useRef<BrowserMultiFormatReader | null>(null)
+  const scanDoneRef = useRef(false)
 
   useEffect(() => {
     if (!isScanning || !videoRef.current) return
 
     const initScanner = async () => {
       try {
+        if (!videoRef.current) {
+          throw new Error("Video element not available")
+        }
+
+        scanDoneRef.current = false
         const reader = new BrowserMultiFormatReader()
         readerRef.current = reader
 
-        const videoInputDevices = await reader.listVideoInputDevices()
+        const videoInputDevices = await BrowserMultiFormatReader.listVideoInputDevices()
 
         if (videoInputDevices.length === 0) {
           throw new Error("No se encontraron cámaras disponibles")
@@ -40,11 +45,11 @@ export function BarcodeScanner({ onScanSuccess, onScanError, isScanning }: Props
           selectedDeviceId,
           videoRef.current,
           (result) => {
-            if (result) {
+            if (result && !scanDoneRef.current) {
               const barcode = result.getText()
               console.log("Barcode detected:", barcode)
+              scanDoneRef.current = true
               onScanSuccess(barcode)
-              reader.reset()
               setInitialized(false)
             }
           }
@@ -64,9 +69,6 @@ export function BarcodeScanner({ onScanSuccess, onScanError, isScanning }: Props
     initScanner()
 
     return () => {
-      if (readerRef.current) {
-        readerRef.current.reset()
-      }
       setInitialized(false)
     }
   }, [isScanning, onScanSuccess, onScanError])
@@ -85,80 +87,39 @@ export function BarcodeScanner({ onScanSuccess, onScanError, isScanning }: Props
 
       {isScanning && (
         <>
-          {/* Scanner Container */}
-          <div className="relative rounded-2xl overflow-hidden bg-black border-4 border-emerald-400 shadow-2xl shadow-emerald-500/30">
-            {/* Video */}
+          <div className="relative rounded-2xl overflow-hidden bg-black border-4 border-blue-400 shadow-2xl shadow-blue-500/30">
             <video
               ref={videoRef}
               className="w-full aspect-video object-cover"
               style={{ transform: "scaleX(-1)" }}
             />
 
-            {/* Animated Scanning Frame */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {/* Main scanning box */}
               <div className="relative w-72 h-48">
-                {/* Corner top-left */}
-                <div className="absolute -top-2 -left-2 w-6 h-6 border-t-4 border-l-4 border-emerald-400" />
-                {/* Corner top-right */}
-                <div className="absolute -top-2 -right-2 w-6 h-6 border-t-4 border-r-4 border-emerald-400" />
-                {/* Corner bottom-left */}
-                <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-4 border-l-4 border-emerald-400" />
-                {/* Corner bottom-right */}
-                <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-4 border-r-4 border-emerald-400" />
-
-                {/* Center box outline */}
-                <div className="w-full h-full border-2 border-emerald-400 rounded-lg opacity-50" />
-
-                {/* Animated line scan */}
-                <div className="absolute inset-0 overflow-hidden rounded-lg">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-b from-emerald-400 to-transparent animate-pulse" />
-                  <div
-                    className="absolute left-0 right-0 h-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-20 animate-pulse"
-                    style={{
-                      animation: "scan 2s infinite",
-                    }}
-                  />
-                </div>
+                <div className="absolute -top-2 -left-2 w-6 h-6 border-t-4 border-l-4 border-blue-400" />
+                <div className="absolute -top-2 -right-2 w-6 h-6 border-t-4 border-r-4 border-blue-400" />
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-4 border-l-4 border-blue-400" />
+                <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-4 border-r-4 border-blue-400" />
+                <div className="w-full h-full border-2 border-blue-400 rounded-lg opacity-50" />
               </div>
             </div>
 
-            {/* Loading indicator */}
             {!initialized && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-3">
-                  <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
-                  <p className="text-emerald-300 text-sm font-semibold">Inicializando cámara...</p>
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                  <p className="text-blue-300 text-sm font-semibold">Inicializando cámara...</p>
                 </div>
               </div>
             )}
 
-            {/* Top instruction */}
             <div className="absolute top-4 left-0 right-0 flex justify-center pointer-events-none">
-              <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-400/50">
-                <Zap className="h-4 w-4 text-emerald-400" />
-                <p className="text-sm text-emerald-300 font-semibold">Apunta el código de barras</p>
-              </div>
-            </div>
-
-            {/* Bottom info */}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
-              <div className="text-xs text-emerald-300 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full">
-                Escaneo automático
+              <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-400/50">
+                <Zap className="h-4 w-4 text-blue-400" />
+                <p className="text-sm text-blue-300 font-semibold">Apunta el código de barras</p>
               </div>
             </div>
           </div>
-
-          <style>{`
-            @keyframes scan {
-              0% {
-                top: -100%;
-              }
-              100% {
-                top: 100%;
-              }
-            }
-          `}</style>
         </>
       )}
     </div>

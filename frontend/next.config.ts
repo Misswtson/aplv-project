@@ -1,13 +1,11 @@
-// next.config.js
-const withPWA = require("next-pwa")({
-  dest: "public",
-  register: true,
-  skipWaiting: true
-});
+import type { NextConfig } from 'next'
+import type webpack from 'webpack'
 
-module.exports = withPWA({
+const nextConfig: NextConfig = {
   reactStrictMode: true,
-  experimental: {
-    optimizePackageImports: ["react", "react-dom"]
-  }
-});
+  webpack: (config: webpack.Configuration) => {
+    return config
+  },
+}
+
+export default nextConfig
