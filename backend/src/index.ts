@@ -27,7 +27,7 @@ app.post("/api/scan", (req, res) => {
   })
 })
 
-/* Get product by barcode - NUEVO */
+/* Get product by barcode */
 app.get("/api/products/barcode/:barcode", (req, res) => {
   const { barcode } = req.params
 

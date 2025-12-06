@@ -1,10 +1,9 @@
-// frontend/src/components/layout/responsive-nav.tsx
 "use client"
 
 import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Home, ScanLine, Search, ShieldCheck, User, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SafeKidsLogo } from "../logo"
 
 type Props = {
   activeTab: string
@@ -15,76 +14,56 @@ type Props = {
 export function ResponsiveNav({ activeTab, onTabChange, children }: Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  const navItems = [
+    { id: "home", label: "Inicio", icon: Home },
+    { id: "scan", label: "Escanear", icon: ScanLine },
+    { id: "search", label: "Buscar", icon: Search },
+    { id: "safe-list", label: "Seguros", icon: ShieldCheck },
+    { id: "profile", label: "Perfil", icon: User },
+  ]
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b-2 border-slate-200 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center font-bold text-lg">
-              A
+          <button onClick={() => onTabChange("home")} className="flex items-center gap-3 hover:opacity-80 transition">
+            <SafeKidsLogo />
+            <div className="flex flex-col hidden sm:block">
+              <span className="text-lg font-bold text-blue-900">SafeKids </span>
+              <span className="text-xs text-slate-600">Alimentos seguros APLV</span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-emerald-900">APLV Helper</span>
-              <span className="text-xs text-slate-600">Para madres y padres</span>
-            </div>
-          </div>
+          </button>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-2">
-            <Button
-              variant={activeTab === "home" ? "default" : "outline"}
-              onClick={() => onTabChange("home")}
-              className={activeTab === "home" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Inicio
-            </Button>
-            <Button
-              variant={activeTab === "scan" ? "default" : "outline"}
-              onClick={() => onTabChange("scan")}
-              className={activeTab === "scan" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
-            >
-              <ScanLine className="h-4 w-4 mr-2" />
-              Escanear
-            </Button>
-            <Button
-              variant={activeTab === "search" ? "default" : "outline"}
-              onClick={() => onTabChange("search")}
-              className={activeTab === "search" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Buscar
-            </Button>
-            <Button
-              variant={activeTab === "safe-list" ? "default" : "outline"}
-              onClick={() => onTabChange("safe-list")}
-              className={activeTab === "safe-list" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
-            >
-              <ShieldCheck className="h-4 w-4 mr-2" />
-              Seguros
-            </Button>
-            <Button
-              variant={activeTab === "profile" ? "default" : "outline"}
-              onClick={() => onTabChange("profile")}
-              className={activeTab === "profile" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Perfil
-            </Button>
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <Button
+                key={item.id}
+                variant={activeTab === item.id ? "default" : "ghost"}
+                onClick={() => onTabChange(item.id)}
+                className={`gap-2 ${
+                  activeTab === item.id
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Button>
+            ))}
           </nav>
 
-          {/* Profile & Mobile Menu */}
+          {/* Right section */}
           <div className="flex items-center gap-3">
-            <button className="hidden sm:flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium hover:bg-emerald-100 transition border-2 border-emerald-200">
-              <span className="h-7 w-7 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+            <button className="hidden sm:flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-sm font-medium hover:bg-blue-100 transition border-2 border-blue-200">
+              <span className="h-7 w-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-xs font-bold">
                 A
               </span>
               <span className="text-slate-700">Aaron</span>
             </button>
 
-            {/* Mobile Menu Toggle */}
             <Button
               variant="outline"
               size="icon"
@@ -98,62 +77,25 @@ export function ResponsiveNav({ activeTab, onTabChange, children }: Props) {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-slate-50 p-3 space-y-2">
-            <Button
-              variant={activeTab === "home" ? "default" : "outline"}
-              onClick={() => {
-                onTabChange("home")
-                setMobileMenuOpen(false)
-              }}
-              className="w-full justify-start bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Inicio
-            </Button>
-            <Button
-              variant={activeTab === "scan" ? "default" : "outline"}
-              onClick={() => {
-                onTabChange("scan")
-                setMobileMenuOpen(false)
-              }}
-              className="w-full justify-start"
-            >
-              <ScanLine className="h-4 w-4 mr-2" />
-              Escanear
-            </Button>
-            <Button
-              variant={activeTab === "search" ? "default" : "outline"}
-              onClick={() => {
-                onTabChange("search")
-                setMobileMenuOpen(false)
-              }}
-              className="w-full justify-start"
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Buscar
-            </Button>
-            <Button
-              variant={activeTab === "safe-list" ? "default" : "outline"}
-              onClick={() => {
-                onTabChange("safe-list")
-                setMobileMenuOpen(false)
-              }}
-              className="w-full justify-start"
-            >
-              <ShieldCheck className="h-4 w-4 mr-2" />
-              Productos Seguros
-            </Button>
-            <Button
-              variant={activeTab === "profile" ? "default" : "outline"}
-              onClick={() => {
-                onTabChange("profile")
-                setMobileMenuOpen(false)
-              }}
-              className="w-full justify-start"
-            >
-              <User className="h-4 w-4 mr-2" />
-              Perfil
-            </Button>
+          <div className="md:hidden border-t border-slate-200 bg-white p-3 space-y-2">
+            {navItems.map((item) => (
+              <Button
+                key={item.id}
+                variant={activeTab === item.id ? "default" : "outline"}
+                onClick={() => {
+                  onTabChange(item.id)
+                  setMobileMenuOpen(false)
+                }}
+                className={`w-full justify-start gap-2 ${
+                  activeTab === item.id
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : ""
+                }`}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Button>
+            ))}
           </div>
         )}
       </header>
@@ -163,64 +105,23 @@ export function ResponsiveNav({ activeTab, onTabChange, children }: Props) {
         <div className="max-w-7xl mx-auto">{children}</div>
       </main>
 
-      {/* Mobile Bottom Navigation (shows only on small screens) */}
+      {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-t-2 border-slate-200 h-20">
         <div className="flex items-center justify-around h-full">
-          <button
-            onClick={() => onTabChange("home")}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition ${
-              activeTab === "home"
-                ? "text-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            <Home className="h-6 w-6" />
-            <span className="text-xs font-semibold">Inicio</span>
-          </button>
-          <button
-            onClick={() => onTabChange("scan")}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition ${
-              activeTab === "scan"
-                ? "text-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            <ScanLine className="h-6 w-6" />
-            <span className="text-xs font-semibold">Escanear</span>
-          </button>
-          <button
-            onClick={() => onTabChange("search")}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition ${
-              activeTab === "search"
-                ? "text-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            <Search className="h-6 w-6" />
-            <span className="text-xs font-semibold">Buscar</span>
-          </button>
-          <button
-            onClick={() => onTabChange("safe-list")}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition ${
-              activeTab === "safe-list"
-                ? "text-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            <ShieldCheck className="h-6 w-6" />
-            <span className="text-xs font-semibold">Seguros</span>
-          </button>
-          <button
-            onClick={() => onTabChange("profile")}
-            className={`flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition ${
-              activeTab === "profile"
-                ? "text-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            <User className="h-6 w-6" />
-            <span className="text-xs font-semibold">Perfil</span>
-          </button>
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onTabChange(item.id)}
+              className={`flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition ${
+                activeTab === item.id
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              <item.icon className="h-6 w-6" />
+              <span className="text-xs font-semibold">{item.label}</span>
+            </button>
+          ))}
         </div>
       </nav>
     </div>
