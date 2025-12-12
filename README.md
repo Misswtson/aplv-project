@@ -19,7 +19,7 @@
 
 ## 🚀 Live Demo
 
-- **Frontend**: [https://aplv-project-ptwomj9b2-emmas-projects-cc952695.vercel.app/](https://aplv-project-ptwomj9b2-emmas-projects-cc952695.vercel.app/)
+- **Frontend**: [https://safekids-aplv.vercel.app/](https://safekids-aplv.vercel.app/)
 - **Status**: Production Ready ✅
 
 ## 📋 Table of Contents
