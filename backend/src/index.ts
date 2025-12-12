@@ -3,6 +3,7 @@ import cors from "cors"
 import versionRouter from "./routes/version"
 import productsRouter from "./routes/products"
 import searchRouter from "./routes/search"
+import  UserProfileRoutes  from "./routes/userProfile"
 
 /* Middleware */
 const app = express()
@@ -14,6 +15,7 @@ app.use(express.json())
 app.use("/version", versionRouter)
 app.use("/api/products", productsRouter)
 app.use("/api/search", searchRouter)
+app.use("/api",UserProfileRoutes)
 
 /* Scan endpoint - Mock for now */
 app.post("/api/scan", (req, res) => {
