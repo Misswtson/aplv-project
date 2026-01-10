@@ -206,7 +206,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📧 Contact & Support
 
 For questions or support:
-- 📧 Email: [elinares235@gmail.com.com]
+- 📧 Email: [elinares235@gmail.com]
 
 ---
 
