@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import './globals.css'
+import { UserProvider } from "../lib/userContext";
 import { RootLayoutClient } from "./components/layout/root-layout.client"
 
 export const metadata: Metadata = {
@@ -16,6 +17,9 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
+        <UserProvider>
+          {children}
+        </UserProvider>
         <RootLayoutClient />
       </body>
     </html>
