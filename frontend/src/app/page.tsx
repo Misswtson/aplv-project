@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { BarcodeScanner } from "../app/components/aplv/barcode-scanner"
 import { ScanLine, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react"
+import BarcodeScanner from "./components/aplv/barcode-scanner"
 
 export default function ScanPage() {
   const [isScanning, setIsScanning] = useState(false)
@@ -83,11 +83,7 @@ export default function ScanPage() {
 
       {/* Scanner active */}
       {isScanning && (
-        <BarcodeScanner
-          isScanning={isScanning}
-          onScanSuccess={handleScanSuccess}
-          onScanError={handleScanError}
-        />
+        <BarcodeScanner/>
       )}
 
       {/* Loading */}

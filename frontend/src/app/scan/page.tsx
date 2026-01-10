@@ -5,8 +5,8 @@ import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ScanLine, AlertTriangle, ShieldCheck, Loader2, X } from "lucide-react"
-import { BarcodeScanner } from "../components/aplv/barcode-scanner"
 import { ScanResultCard } from "../components/aplv/scan-result-card"
+import BarcodeScanner from "../components/aplv/barcode-scanner"
 
 type ScanResult = {
   id: number
@@ -88,11 +88,7 @@ export default function ScanPage() {
             <>
               {/* Active Scanner */}
               <div className="p-4 bg-slate-900">
-                <BarcodeScanner
-                  isScanning={isScanning}
-                  onScanSuccess={handleScanSuccess}
-                  onScanError={handleScanError}
-                />
+                <BarcodeScanner/>
               </div>
 
               {/* Cancel Button */}
